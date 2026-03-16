@@ -1,0 +1,1417 @@
+/* ==============================
+   CHRONOFORGE · LITURGIA
+   Catholic Liturgical Calendar
+   Premium Edition - Final Fixed Version
+   ============================== */
+
+/* ==============================
+   VARIABLES - Premium colors + Compact spacing
+   ============================== */
+:root {
+  --purple: #967AA1;        /* Softer, more regal purple */
+  --purple-deep: #6B4E71;   /* Deep for contrast */
+  
+  --liturgical-white: #F9F4E8;  /* Warmer white */
+  --liturgical-red: #B84A4A;    /* Deeper, richer red */
+  --liturgical-green: #4F7A6B;  /* Sage green with elegance */
+  --liturgical-purple: var(--purple);
+  --liturgical-rose: #F2D7D5;   /* Soft, subtle rose */
+  --liturgical-gold: #D4AF37;   /* True gold */
+  
+  /* RGB values for rgba transparency */
+  --liturgical-white-rgb: 249, 244, 232;
+  --liturgical-red-rgb: 184, 74, 74;
+  --liturgical-green-rgb: 79, 122, 107;
+  --purple-rgb: 150, 122, 161;
+  --liturgical-rose-rgb: 242, 215, 213;
+  --liturgical-gold-rgb: 212, 175, 55;
+  --bg-cream-rgb: 250, 245, 233;
+  
+  /* Unified background palette - smooth transitions */
+  --bg-parchment: #F5EFE2;     /* Main background - aged vellum */
+  --bg-cream: #FAF5E9;         /* Cards - creamy white */
+  --bg-warm: #F3EADB;          /* Warm accents */
+  --bg-deep: #E8DDCD;          /* Deep accents */
+  --bg-gold-accent: rgba(212, 175, 55, 0.05);  /* Subtle gold wash */
+  
+  --ink: #2C2C2C;              /* Softer black for text */
+  --ink-light: #4A4A4A;        /* Secondary text */
+  --gold: #D4AF37;             /* True gold */
+  --gold-light: #E5C87B;       /* Light gold */
+  --crimson: #B84A4A;          /* Deep crimson */
+  --crimson-light: #C66B6B;    /* Light crimson */
+  --forest: #4F7A6B;           /* Forest green */
+  --forest-light: #6B9485;     /* Light forest */
+  
+  --text-primary: var(--ink);
+  --text-secondary: #5A5A5A;
+  --text-muted: #7A7A7A;
+  --border-light: #E0D5C5;
+  --border-medium: #CBBFAF;
+  --shadow: rgba(0, 0, 0, 0.05);
+  --shadow-strong: rgba(0, 0, 0, 0.08);
+  --shadow-gold: rgba(212, 175, 55, 0.2);
+  
+  /* Compact spacing from old version */
+  --space-xs: 0.2rem;
+  --space-sm: 0.4rem;
+  --space-md: 0.75rem;
+  --space-lg: 1.25rem;
+  --space-xl: 1.75rem;
+  
+  --transition: 0.2s ease;
+  --transition-slow: 0.3s ease;
+}
+
+/* Even more compact for ultra mode */
+body.compact-mode {
+  --space-xs: 0.15rem;
+  --space-sm: 0.3rem;
+  --space-md: 0.6rem;
+  --space-lg: 1rem;
+  --space-xl: 1.5rem;
+}
+
+/* ==============================
+   BASE - Premium foundation
+   ============================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg-parchment);
+  color: var(--text-primary);
+  line-height: 1.5;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Premium parchment texture */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  background-image: 
+    linear-gradient(45deg, rgba(212, 175, 55, 0.02) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(212, 175, 55, 0.02) 25%, transparent 25%);
+  background-size: 60px 60px;
+  z-index: -1;
+}
+
+/* Gold edge glow */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0.3;
+  z-index: 100;
+}
+
+/* Language separator control */
+body.lang-latin .header-sep,
+body.lang-latin .legend-sep {
+  display: none;
+}
+
+body.lang-english .header-sep,
+body.lang-english .legend-sep {
+  display: none;
+}
+
+body.lang-bilingual .header-sep,
+body.lang-bilingual .legend-sep {
+  display: inline;
+}
+
+/* Mobile responsive labels */
+.label-long { display: inline; }
+.label-short { display: none; }
+
+@media (max-width: 480px) {
+  .label-long { display: none; }
+  .label-short { display: inline; }
+}
+
+h1, h2, h3, .liturgical-badge, .liturgical-item, .metadata-label {
+  font-family: 'Cormorant Garamond', 'Times New Roman', serif;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+/* ==============================
+   HEADER - Premium feel
+   ============================== */
+.main-header {
+  background: var(--bg-cream);
+  border-bottom: 1px solid var(--gold-light);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 4px 20px var(--shadow-gold);
+  backdrop-filter: blur(10px);
+  background: rgba(250, 245, 233, 0.95);
+}
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-sm) var(--space-lg);
+  background: transparent;
+}
+
+.title-group h1 {
+  font-size: 1.8rem;
+  color: var(--ink);
+  font-weight: 500;
+  line-height: 1.2;
+  position: relative;
+}
+
+.title-group h1::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 60px;
+  height: 2px;
+  background: var(--gold);
+  opacity: 0.3;
+}
+
+.title-sub {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  margin-top: 2px;
+  font-style: italic;
+}
+
+.liturgical-badge {
+  padding: var(--space-xs) var(--space-lg);
+  font-size: 0.85rem;
+  border: none;
+  box-shadow: 0 2px 10px var(--shadow-gold);
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+  border-radius: 30px;
+  font-weight: 500;
+}
+
+.liturgical-badge::before {
+  content: '✝';
+  margin-right: 6px;
+  font-size: 0.8rem;
+  opacity: 0.9;
+}
+
+.liturgical-badge::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+  pointer-events: none;
+}
+
+/* Liturgical badge season colors */
+.liturgical-badge.season-white { background: var(--liturgical-white); color: var(--ink); }
+.liturgical-badge.season-red { background: var(--liturgical-red); color: white; }
+.liturgical-badge.season-green { background: var(--liturgical-green); color: white; }
+.liturgical-badge.season-purple { background: var(--liturgical-purple); color: white; }
+.liturgical-badge.season-rose { background: var(--liturgical-rose); color: var(--ink); }
+.liturgical-badge.season-gold { background: var(--liturgical-gold); color: var(--ink); }
+
+/* ==============================
+   NAVIGATION - Refined
+   ============================== */
+.header-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-xs) var(--space-lg);
+  background: var(--bg-warm);
+  border-top: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-light);
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.nav-arrow {
+  background: transparent;
+  border: 1px solid var(--border-medium);
+  color: var(--ink);
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--bg-cream);
+  box-shadow: 0 2px 5px var(--shadow);
+}
+
+.nav-arrow:hover {
+  background: var(--gold);
+  color: white;
+  border-color: var(--gold);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px var(--shadow-gold);
+}
+
+.current-display {
+  background: var(--bg-cream);
+  padding: var(--space-xs) var(--space-md);
+  border: 1px solid var(--border-light);
+  min-width: 260px;
+  text-align: center;
+  box-shadow: inset 0 1px 5px var(--shadow);
+  flex: 0 1 auto;
+  border-radius: 40px;
+}
+
+.gregorian-display {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 400;
+  letter-spacing: 0.5px;
+}
+
+.liturgical-display {
+  display: block;
+  font-size: 0.95rem;
+  color: var(--crimson);
+  font-weight: 500;
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 240px;
+}
+
+.today-btn {
+  background: var(--bg-cream);
+  border: 1px solid var(--purple);
+  color: var(--purple);
+  padding: var(--space-xs) var(--space-sm);
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+  border-radius: 30px;
+}
+
+.today-btn:hover {
+  background: var(--purple);
+  color: white;
+  border-color: var(--purple);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px var(--shadow);
+}
+
+.today-btn[data-today="true"] {
+  background: var(--gold);
+  color: var(--ink);
+  border-color: var(--gold);
+  cursor: default;
+  opacity: 0.9;
+}
+
+.today-btn[data-today="true"]:hover {
+  background: var(--gold);
+  color: var(--ink);
+  transform: none;
+  box-shadow: none;
+}
+
+.settings-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.3rem;
+  cursor: pointer;
+  transition: var(--transition);
+  padding: var(--space-xs);
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.settings-btn:hover {
+  color: var(--gold);
+  background: var(--bg-cream);
+  transform: rotate(90deg);
+  box-shadow: 0 2px 10px var(--shadow);
+}
+
+/* ==============================
+   SETTINGS MENU
+   ============================== */
+.settings-menu {
+  position: absolute;
+  top: 100%;
+  right: var(--space-lg);
+  background: var(--bg-cream);
+  padding: var(--space-lg);
+  min-width: 280px;
+  box-shadow: 0 10px 30px var(--shadow-strong);
+  border: 1px solid var(--gold-light);
+  z-index: 1000;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  background: rgba(250, 245, 233, 0.98);
+}
+
+.settings-menu.hidden {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: var(--transition);
+}
+
+.setting-group {
+  margin-bottom: var(--space-sm);
+}
+
+.setting-group label {
+  display: block;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-xs);
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.setting-group select {
+  width: 100%;
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--bg-parchment);
+  color: var(--ink);
+  border: 1px solid var(--border-medium);
+  font-size: 0.85rem;
+  border-radius: 8px;
+  transition: var(--transition);
+}
+
+.setting-group select:hover {
+  border-color: var(--gold);
+  box-shadow: 0 2px 8px var(--shadow-gold);
+}
+
+.setting-group.checkbox {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.setting-group.checkbox input {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--gold);
+}
+
+.reset-btn {
+  background: var(--bg-parchment);
+  border: 1px solid var(--border-medium);
+  color: var(--ink);
+  padding: var(--space-xs) var(--space-sm);
+  cursor: pointer;
+  width: 100%;
+  font-size: 0.85rem;
+  transition: var(--transition);
+  border-radius: 8px;
+}
+
+.reset-btn:hover {
+  background: var(--gold);
+  color: white;
+  border-color: var(--gold);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px var(--shadow-gold);
+}
+
+/* ==============================
+   LITURGICAL BAR
+   ============================== */
+.liturgical-bar {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-lg);
+  padding: var(--space-xs) var(--space-lg);
+  background: var(--bg-warm);
+  border-bottom: 1px solid var(--border-light);
+  flex-wrap: wrap;
+  position: relative;
+}
+
+.liturgical-bar::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+.liturgical-item {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  position: relative;
+  padding: 0 var(--space-xs);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.liturgical-item::after {
+  content: '·';
+  position: absolute;
+  right: -10px;
+  color: var(--gold);
+  font-size: 1.1rem;
+}
+
+.liturgical-item:last-child::after {
+  display: none;
+}
+
+.liturgical-color {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.liturgical-color .color-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  box-shadow: 0 0 5px currentColor;
+}
+
+.warning-badge {
+  color: var(--crimson);
+  font-style: italic;
+}
+
+/* ==============================
+   MONTH METADATA - FIXED RESPONSIVENESS
+   ============================== */
+.month-metadata {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-cream);
+  padding: var(--space-xs) var(--space-sm);
+  margin: var(--space-sm) auto;
+  max-width: 900px;
+  border: 1px solid var(--border-light);
+  box-shadow: 0 2px 8px var(--shadow);
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
+.month-metadata::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--gold), var(--crimson), var(--gold));
+  opacity: 0.3;
+}
+
+.metadata-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  flex: 1 1 auto;
+  min-width: 120px;
+  max-width: 25%;
+}
+
+.metadata-label {
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.metadata-value {
+  color: var(--ink);
+  font-size: 0.8rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+  flex-shrink: 1;
+}
+
+/* ===============
+   WEEKDAY GRID
+   =============== */
+.weekday-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  margin-bottom: 4px;
+  background: transparent;
+  border: none;
+}
+
+.weekday-cell {
+  background: var(--bg-warm);
+  padding: var(--space-xs) 0;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  border-radius: 6px 6px 0 0;
+}
+
+.weekday-la {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600;
+  color: var(--crimson);
+  font-size: 0.9rem;
+}
+
+.weekday-en {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* ==============================
+   DAYS GRID - Premium + Compact + Fixed Corners
+   ============================== */
+.days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  margin-bottom: var(--space-sm);
+}
+
+.day-cell {
+  background: var(--bg-cream);
+  padding: var(--space-xs);
+  min-height: 90px;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  grid-template-columns: 1fr auto;
+  transition: var(--transition-slow);
+  cursor: pointer;
+  position: relative;
+  border-left: 4px solid transparent;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px var(--shadow);
+}
+
+/* Liturgical color borders */
+.day-cell.white { border-left-color: var(--liturgical-white); }
+.day-cell.red { border-left-color: var(--liturgical-red); }
+.day-cell.green { border-left-color: var(--liturgical-green); }
+.day-cell.purple { border-left-color: var(--purple); }
+.day-cell.rose { border-left-color: var(--liturgical-rose); }
+.day-cell.gold { border-left-color: var(--liturgical-gold); }
+
+/* Hover effects */
+.day-cell:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--shadow-gold);
+  z-index: 10;
+  background: var(--bg-warm);
+}
+
+/* ACTIVE DAY - SOLID BACKGROUND */
+.day-cell.active-day {
+  background: var(--bg-warm) !important;
+  box-shadow: 0 0 0 2px var(--gold), 0 4px 12px var(--shadow-gold);
+}
+
+.day-cell.active-day .gregorian-date,
+.day-cell.active-day .feast-name,
+.day-cell.active-day .rank-icon,
+.day-cell.active-day .observance-icon {
+  opacity: 1;
+  color: var(--ink);
+}
+
+/* TODAY - subtle gold tint */
+.day-cell.today {
+  background: rgba(var(--bg-cream-rgb), 0.6);
+  border-left-width: 4px;
+}
+
+/* Cell content grid positioning */
+.gregorian-date {
+  grid-row: 1;
+  grid-column: 1;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* TOP-RIGHT ICON - For most important observance (obligation) */
+.observance-top {
+  grid-row: 1;
+  grid-column: 2;
+  font-size: 0.85rem;
+  text-align: right;
+  align-self: start;
+  margin-top: 0;
+  color: var(--crimson);
+  font-weight: 600;
+}
+
+/* Feast name spans both columns */
+.feast-name {
+  grid-row: 2;
+  grid-column: 1 / span 2;
+  font-size: 0.7rem;
+  margin-top: 2px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  padding-right: 4px;
+  font-style: italic;
+}
+
+/* Bottom-left observance group */
+.observance-bottom {
+  grid-row: 3;
+  grid-column: 1;
+  display: flex;
+  gap: 2px;
+  flex-wrap: wrap;
+  max-width: 100%;
+  align-items: flex-end;
+  margin-top: 2px;
+}
+
+.observance-icon {
+  display: inline-block;
+  font-size: 0.8rem;
+  width: 20px;
+  height: 20px;
+  text-align: center;
+  line-height: 20px;
+  border-radius: 3px;
+  transition: var(--transition);
+}
+
+.observance-icon:hover {
+  transform: scale(1.1);
+}
+
+/* Max 4 icons total, hide overflow */
+.observance-icon:nth-child(n+4) {
+  display: none;
+}
+
+.holy-icon { color: var(--crimson); }
+.vigil-icon { color: var(--gold); }
+.octave-icon { color: var(--forest); }
+.fast-icon { color: var(--purple); }
+
+/* Rank icon - bottom right */
+.rank-icon {
+  grid-row: 3;
+  grid-column: 2;
+  font-size: 1rem;
+  text-align: right;
+  align-self: flex-end;
+  margin-top: 2px;
+}
+
+.rank-icon.solemnity { color: var(--gold); font-size: 1.1rem; }
+.rank-icon.feast { color: var(--crimson); }
+.rank-icon.memorial { color: var(--forest); }
+.rank-icon.optional { color: var(--text-muted); }
+.rank-icon.commemoration { color: var(--text-muted); font-size: 0.8rem; }
+
+/* Empty cells for previous/next month - INVISIBLE */
+.day-cell.empty {
+  background: transparent;
+  cursor: default;
+  min-height: 0;
+  height: auto;
+  border-left-color: transparent;
+  box-shadow: none;
+  pointer-events: none;
+  visibility: visible;
+  opacity: 0;
+}
+
+.day-cell.empty:hover {
+  background: transparent;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ==============================
+   FEAST NOTICE
+   ============================== */
+.feast-notice {
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  border: none;
+  padding: var(--space-xs) var(--space-md);
+  margin: var(--space-xs) 0;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--ink);
+  font-weight: 500;
+  animation: fadeInOut 5s ease;
+  border-radius: 30px;
+  box-shadow: 0 2px 10px var(--shadow-gold);
+}
+
+.feast-notice.hidden {
+  display: none;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(-5px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-5px); }
+}
+
+/* ==============================
+   INFO PANEL - Premium + Compact
+   ============================== */
+.info-panel {
+  background: var(--bg-cream);
+  padding: var(--space-lg);
+  max-width: 1000px;
+  margin: var(--space-lg) auto;
+  border: 1px solid var(--border-light);
+  box-shadow: 0 8px 25px var(--shadow-strong);
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.info-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gold), var(--crimson), var(--forest), var(--purple));
+  opacity: 0.4;
+}
+
+.info-row-group {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+  flex-wrap: wrap;
+}
+
+.info-row-group > * {
+  flex: 1 1 calc(50% - var(--space-md));
+  min-width: 260px;
+}
+
+.info-section {
+  background: var(--bg-warm);
+  padding: var(--space-md);
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  box-shadow: 0 1px 4px var(--shadow);
+}
+
+.info-section h3 {
+  color: var(--crimson);
+  font-size: 0.95rem;
+  margin-bottom: var(--space-xs);
+  padding-bottom: var(--space-xs);
+  border-bottom: 1px solid var(--border-light);
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--bg-cream);
+  margin-bottom: 2px;
+  font-size: 0.85rem;
+  border-left: 3px solid transparent;
+  border-radius: 4px;
+  transition: var(--transition);
+}
+
+.info-item:hover {
+  background: var(--bg-warm);
+  transform: translateX(2px);
+}
+
+.info-item.highlight {
+  border-left-color: var(--gold);
+  background: var(--bg-warm);
+}
+
+.info-label {
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.vigil-grid, .octave-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.vigil-item, .octave-item {
+  background: var(--bg-cream);
+  padding: var(--space-xs) var(--space-sm);
+  font-size: 0.8rem;
+  border-left: 3px solid var(--gold);
+  border-radius: 4px;
+  transition: var(--transition);
+}
+
+.vigil-item:hover, .octave-item:hover {
+  transform: translateX(2px);
+  background: var(--bg-warm);
+}
+
+.octave-item {
+  border-left-color: var(--forest);
+}
+
+.info-note {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.65rem;
+  margin-top: var(--space-sm);
+  font-style: italic;
+}
+
+/* ==============================
+   FOOTER LEGEND - Premium + Compact
+   ============================== */
+.calendar-legend {
+  max-width: 1000px;
+  margin: var(--space-lg) auto;
+  padding: var(--space-md);
+  background: var(--bg-cream);
+  border: 1px solid var(--border-light);
+  box-shadow: 0 8px 25px var(--shadow-strong);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.calendar-legend::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+.legend-colors {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-xs);
+  padding: 0 0 var(--space-xs) 0;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.legend-ranks {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-xs);
+  padding: 0 0 var(--space-xs) 0;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.legend-observances {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-xs);
+  padding: 0 0 var(--space-xs) 0;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.legend-year {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-xs) 0 0 0;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  color: var(--text-primary);
+  flex-wrap: wrap;
+  padding: 2px;
+  border-radius: 4px;
+  transition: var(--transition);
+}
+
+.legend-item:hover {
+  background: var(--bg-warm);
+  transform: translateX(2px);
+}
+
+/* Ensure legend icons are visible */
+.legend-item .rank-icon,
+.legend-item .observance-icon {
+  display: inline-block;
+  width: 20px;
+  text-align: center;
+  font-size: 0.9rem;
+  position: static;
+}
+
+.color-dot {
+  width: 14px;
+  height: 14px;
+  border: 1px solid rgba(0,0,0,0.03);
+  flex-shrink: 0;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px var(--shadow);
+}
+
+.color-dot.white { background: var(--liturgical-white); }
+.color-dot.red { background: var(--liturgical-red); }
+.color-dot.green { background: var(--liturgical-green); }
+.color-dot.purple { background: var(--purple); }
+.color-dot.rose { background: var(--liturgical-rose); }
+.color-dot.gold { background: var(--liturgical-gold); }
+
+.year-cycle {
+  color: var(--crimson);
+  font-weight: 500;
+  font-size: 0.8rem;
+}
+
+/* ==============================
+   TOAST
+   ============================== */
+.toast {
+  position: fixed;
+  bottom: var(--space-lg);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--purple);
+  color: white;
+  padding: var(--space-xs) var(--space-lg);
+  z-index: 200;
+  animation: slideUp 0.3s;
+  border: none;
+  font-size: 0.85rem;
+  box-shadow: 0 4px 15px var(--shadow-strong);
+  border-radius: 40px;
+  backdrop-filter: blur(10px);
+  background: rgba(107, 78, 113, 0.95);
+}
+
+.toast.hidden {
+  display: none;
+}
+
+/* ==============================
+   ERROR BOUNDARY
+   ============================== */
+.error-boundary {
+  background: var(--crimson);
+  color: white;
+  padding: var(--space-md);
+  margin: var(--space-sm) 0;
+  text-align: center;
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+  font-size: 0.9rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px var(--shadow);
+}
+
+.error-boundary button {
+  background: white;
+  color: var(--crimson);
+  border: none;
+  padding: var(--space-xs) var(--space-md);
+  cursor: pointer;
+  font-weight: 600;
+  border-radius: 30px;
+  transition: var(--transition);
+  font-size: 0.85rem;
+}
+
+.error-boundary button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px var(--shadow);
+}
+
+.error-boundary.hidden {
+  display: none;
+}
+
+/* ==============================
+   ANIMATIONS
+   ============================== */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+/* ==============================
+   RESPONSIVE - Premium mobile
+   ============================== */
+@media (max-width: 768px) {
+  .header-top {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--space-xs);
+  }
+  
+  .title-group h1::after {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  .header-nav {
+    justify-content: center;
+    gap: 4px;
+  }
+  
+  .current-display {
+    min-width: 200px;
+    order: -1;
+    width: 100%;
+    margin-bottom: 4px;
+  }
+  
+  .liturgical-display {
+    max-width: 100%;
+  }
+  
+  .liturgical-bar {
+    gap: var(--space-sm);
+  }
+  
+  .liturgical-item::after {
+    display: none;
+  }
+  
+  /* Month metadata mobile fix */
+  .month-metadata {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-xs);
+    padding: var(--space-sm) var(--space-sm);
+    width: 100%;
+  }
+  
+  .metadata-item {
+    justify-content: space-between;
+    min-width: 100%;
+    max-width: 100%;
+    width: 100%;
+  }
+  
+  .metadata-label {
+    font-size: 0.65rem;
+    white-space: nowrap;
+  }
+  
+  .metadata-value {
+    max-width: 60%;
+    text-align: right;
+    font-size: 0.75rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .info-row-group {
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+  
+  .info-row-group > * {
+    flex: 1 1 100%;
+    min-width: 100%;
+  }
+  
+  .day-cell {
+    min-height: 80px;
+    padding: 2px;
+  }
+  
+  .gregorian-date {
+    font-size: 0.9rem;
+  }
+  
+  .feast-name {
+    font-size: 0.6rem;
+    max-width: 85%;
+  }
+  
+  .observance-icon {
+    width: 16px;
+    height: 16px;
+    font-size: 0.7rem;
+  }
+  
+  .observance-icon:nth-child(n+3) {
+    display: none; 
+  }
+  
+  .legend-colors {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-xs);
+  }
+  
+  .legend-ranks,
+  .legend-observances {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-xs);
+  }
+  
+  .legend-item {
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-arrow {
+    width: 32px;
+    height: 32px;
+    font-size: 0.8rem;
+  }
+  
+  .current-display {
+    min-width: 170px;
+    padding: 2px var(--space-xs);
+  }
+  
+  .gregorian-display {
+    font-size: 0.7rem;
+  }
+  
+  .liturgical-display {
+    font-size: 0.8rem;
+  }
+  
+  .today-btn {
+    padding: 2px var(--space-xs);
+    font-size: 0.75rem;
+  }
+  
+  .liturgical-item {
+    font-size: 0.7rem;
+  }
+  
+  .month-metadata {
+    padding: var(--space-xs) var(--space-xs);
+  }
+  
+  .metadata-label {
+    font-size: 0.6rem;
+  }
+  
+  .metadata-value {
+    font-size: 0.7rem;
+    max-width: 55%;
+  }
+  
+  .day-cell {
+    min-height: 70px;
+  }
+  
+  .gregorian-date {
+    font-size: 0.8rem;
+  }
+  
+  .feast-name {
+    display: none; 
+  }
+  
+  .day-cell.active-day .feast-name {
+    display: block;
+    font-size: 0.55rem;
+    max-width: 80%;
+  }
+  
+  .rank-icon {
+    font-size: 0.8rem;
+  }
+  
+  .observance-icon {
+    width: 14px;
+    height: 14px;
+    font-size: 0.65rem;
+  }
+  
+  .observance-icon:nth-child(n+2) {
+    display: none; /* Max 1 icon on mobile */
+  }
+  
+  .legend-colors {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 350px) {
+  .legend-colors {
+    grid-template-columns: 1fr;
+  }
+  
+  .legend-ranks,
+  .legend-observances {
+    grid-template-columns: 1fr;
+  }
+  
+  .legend-item {
+    justify-content: center;
+  }
+  
+  .day-cell {
+    min-height: 65px;
+  }
+  
+  .observance-icon {
+    width: 12px;
+    height: 12px;
+    font-size: 0.6rem;
+  }
+}
+
+/* Touch devices - no hover effects */
+@media (hover: none) and (pointer: coarse) {
+  .nav-arrow,
+  .today-btn,
+  .settings-btn,
+  .day-cell,
+  .reset-btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  .day-cell:hover {
+    transform: none;
+    box-shadow: 0 1px 3px var(--shadow);
+    background: var(--bg-cream);
+  }
+}
+
+/* ==============================
+   PRINT
+   ============================== */
+@media print {
+  .main-header,
+  .liturgical-bar,
+  .settings-btn,
+  .nav-arrow,
+  .today-btn,
+  .toast {
+    display: none !important;
+  }
+  
+  body {
+    background: white;
+    color: black;
+  }
+  
+  .day-cell {
+    background: white;
+    border: 1px solid #ccc;
+    break-inside: avoid;
+    box-shadow: none;
+  }
+  
+  .info-panel {
+    background: white;
+    border: 1px solid #ccc;
+    box-shadow: none;
+  }
+  
+  .weekday-la,
+  .weekday-en {
+    color: black;
+  }
+  
+  .legend-item {
+    color: black;
+  }
+  
+  .color-dot {
+    border: 1px solid #333;
+  }
+}
