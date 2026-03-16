@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="la">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>ChronoForge · Liturgia · Catholic Liturgical Calendar</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  
+  <style>
+    body { opacity: 0; transition: opacity 0.2s; background: #2C1810; }
+    body.ready { opacity: 1; }
+    
+    body.lang-latin .title-sub,
+    body.lang-latin .header-en,
+    body.lang-latin .weekday-en,
+    body.lang-latin .legend-en { display: none; }
+    
+    body.lang-english .title-sub,
+    body.lang-english .header-la,
+    body.lang-english .weekday-la,
+    body.lang-english .legend-la { display: none; }
+    
+    body.lang-bilingual .title-sub,
+    body.lang-bilingual .header-sep { display: inline; }
+    body.lang-bilingual .header-la,
+    body.lang-bilingual .header-en,
+    body.lang-bilingual .weekday-la,
+    body.lang-bilingual .weekday-en,
+    body.lang-bilingual .legend-la,
+    body.lang-bilingual .legend-en { display: inline-block; }
+    
+    /* Mobile responsive labels */
+    .label-long { display: inline; }
+    .label-short { display: none; }
+    
+    @media (max-width: 480px) {
+      .label-long { display: none; }
+      .label-short { display: inline; }
+    }
+  </style>
+</head>
+<body class="lang-bilingual">
+
+  <!-- MAIN HEADER -->
+  <header class="main-header">
+    <div class="header-top">
+      <div class="title-group">
+        <h1>ChronoForge · Liturgia</h1>
+        <p class="title-sub header-en">Catholic Liturgical Calendar Engine</p>
+      </div>
+      <div class="liturgical-badge" id="liturgicalBadge">
+        <span class="badge-la">Tempus per annum</span>
+        <span class="header-sep"> / </span>
+        <span class="badge-en">Ordinary Time</span>
+      </div>
+    </div>
+    
+    <!-- Navigation Bar -->
+    <div class="header-nav" role="navigation">
+      <button class="nav-arrow" id="prevYear" aria-label="Annus prior | Previous year">◀◀</button>
+      <button class="nav-arrow" id="prevMonth" aria-label="Mensis prior | Previous month">◀</button>
+      
+      <div class="current-display" aria-live="polite">
+        <span class="gregorian-display" id="headerGregorian">March 2025</span>
+        <span class="liturgical-display" id="headerLiturgical">
+          <span class="header-la">Dominica II Quadragesimae</span>
+          <span class="header-sep"> / </span>
+          <span class="header-en">Second Sunday of Lent</span>
+        </span>
+      </div>
+      
+      <button class="nav-arrow" id="nextMonth" aria-label="Mensis sequens | Next month">▶</button>
+      <button class="nav-arrow" id="nextYear" aria-label="Annus sequens | Next year">▶▶</button>
+      
+      <button id="toggleToday" class="today-btn" aria-label="Hodie | Today">
+        <span class="today-icon">📅</span>
+        <span class="header-la" id="todayText-la">Hodie</span>
+        <span class="header-sep"> / </span>
+        <span class="header-en" id="todayText-en">Today</span>
+      </button>
+      <button id="settingsToggle" class="settings-btn" aria-label="Settings | Configurare">⚙️</button>
+    </div>
+
+    <!-- Settings Menu -->
+    <div id="settingsMenu" class="settings-menu hidden">
+      <div class="setting-group">
+        <label for="detailLevel">
+          <span class="header-la">Gradus</span>
+          <span class="header-sep"> / </span>
+          <span class="header-en">Level</span>
+        </label>
+        <select id="detailLevel">
+          <option value="basic" data-la="Simplex" data-en="Basic">Simplex / Basic</option>
+          <option value="standard" selected data-la="Communis" data-en="Standard">Communis / Standard</option>
+          <option value="complete" data-la="Plenus" data-en="Complete">Plenus / Complete</option>
+        </select>
+      </div>
+      <div class="setting-group">
+        <label for="languagePreference">
+          <span class="header-la">Lingua</span>
+          <span class="header-sep"> / </span>
+          <span class="header-en">Language</span>
+        </label>
+        <select id="languagePreference">
+          <option value="latin" data-la="Latina" data-en="Latin">Latina / Latin</option>
+          <option value="english" data-la="Anglica" data-en="English">Anglica / English</option>
+          <option value="bilingual" selected data-la="Latina/Anglica" data-en="Latin/English">Latina/Anglica / Latin/English</option>
+        </select>
+      </div>
+      <div class="setting-group checkbox">
+        <input type="checkbox" id="showHolyDays" checked>
+        <label for="showHolyDays">
+          <span class="header-la">Dies obligationis</span>
+          <span class="header-sep"> / </span>
+          <span class="header-en">Holy days</span>
+        </label>
+      </div>
+      <div class="setting-group checkbox">
+        <input type="checkbox" id="showRankIcons" checked>
+        <label for="showRankIcons">
+          <span class="header-la">Gradus iconae</span>
+          <span class="header-sep"> / </span>
+          <span class="header-en">Rank icons</span>
+        </label>
+      </div>
+      <div class="setting-group checkbox">
+        <input type="checkbox" id="showVigils" checked>
+        <label for="showVigils">
+          <span class="header-la">Vigiliae</span>
+          <span class="header-sep"> / </span>
+          <span class="header-en">Vigils</span>
+        </label>
+      </div>
+      <div class="setting-group checkbox">
+        <input type="checkbox" id="showOctaves" checked>
+        <label for="showOctaves">
+          <span class="header-la">Octavae</span>
+          <span class="header-sep"> / </span>
+          <span class="header-en">Octaves</span>
+        </label>
+      </div>
+      <div class="setting-group checkbox">
+        <input type="checkbox" id="showFast" checked>
+        <label for="showFast">
+          <span class="header-la">Ieiunium</span>
+          <span class="header-sep"> / </span>
+          <span class="header-en">Fast</span>
+        </label>
+      </div>
+      <div class="setting-group checkbox">
+        <input type="checkbox" id="compactMode" checked>
+        <label for="compactMode">
+          <span class="header-la">Compactus</span>
+          <span class="header-sep"> / </span>
+          <span class="header-en">Compact</span>
+        </label>
+      </div>
+      <div class="setting-group">
+        <button id="resetSettings" class="reset-btn">
+          <span class="header-la">↺ Restituere</span>
+          <span class="header-sep"> / </span>
+          <span class="header-en">↺ Reset</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- LITURGICAL BAR -->
+  <div class="liturgical-bar">
+    <div class="liturgical-item" id="liturgicalSeason">
+      <span class="header-la">Quadragesima</span>
+      <span class="header-sep"> / </span>
+      <span class="header-en">Lent</span>
+    </div>
+    <div class="liturgical-item" id="liturgicalWeek">
+      <span class="header-la">Hebdomada II</span>
+      <span class="header-sep"> / </span>
+      <span class="header-en">Week II</span>
+    </div>
+    <div class="liturgical-item" id="liturgicalYear">
+      <span class="header-la">Annus A</span>
+      <span class="header-sep"> / </span>
+      <span class="header-en">Year A</span>
+    </div>
+    <div class="liturgical-item liturgical-color" id="liturgicalColorDisplay">
+      <span class="color-dot purple" id="liturgicalColorDot"></span>
+      <span class="header-la" id="liturgicalColor-la">Purpureus</span>
+      <span class="header-sep"> / </span>
+      <span class="header-en" id="liturgicalColor-en">Purple</span>
+    </div>
+    <div class="liturgical-item warning-badge" id="rangeWarning" role="alert"></div>
+  </div>
+
+  <!-- MAIN CALENDAR -->
+  <main id="main-content">
+    <!-- Month Metadata - with responsive labels -->
+    <div class="month-metadata">
+      <div class="metadata-item">
+        <span class="metadata-label">
+          <span class="header-la">
+            <span class="label-long">Mensis</span>
+            <span class="label-short">Mensis</span>
+          </span>
+          <span class="header-sep"> / </span>
+          <span class="header-en">
+            <span class="label-long">Month</span>
+            <span class="label-short">Month</span>
+          </span>
+        </span>
+        <span class="metadata-value" id="monthName">March</span>
+      </div>
+      
+      <div class="metadata-item">
+        <span class="metadata-label">
+          <span class="header-la">
+            <span class="label-long">Dies</span>
+            <span class="label-short">Dies</span>
+          </span>
+          <span class="header-sep"> / </span>
+          <span class="header-en">
+            <span class="label-long">Days</span>
+            <span class="label-short">Days</span>
+          </span>
+        </span>
+        <span class="metadata-value" id="monthDays">31</span>
+      </div>
+      
+      <div class="metadata-item">
+        <span class="metadata-label">
+          <span class="header-la">
+            <span class="label-long">Festum principale</span>
+            <span class="label-short">Festum</span>
+          </span>
+          <span class="header-sep"> / </span>
+          <span class="header-en">
+            <span class="label-long">Principal feast</span>
+            <span class="label-short">Main feast</span>
+          </span>
+        </span>
+        <span class="metadata-value" id="monthFeast">
+          <span class="header-la">Annuntiatio Domini</span>
+          <span class="header-sep"> / </span>
+          <span class="header-en">Annunciation</span>
+        </span>
+      </div>
+      
+      <div class="metadata-item">
+        <span class="metadata-label">
+          <span class="header-la">
+            <span class="label-long">Tempus</span>
+            <span class="label-short">Tempus</span>
+          </span>
+          <span class="header-sep"> / </span>
+          <span class="header-en">
+            <span class="label-long">Season</span>
+            <span class="label-short">Season</span>
+          </span>
+        </span>
+        <span class="metadata-value" id="monthSeason">
+          <span class="header-la">Quadragesima</span>
+          <span class="header-sep"> / </span>
+          <span class="header-en">Lent</span>
+        </span>
+      </div>
+    </div>
+
+    <!-- Weekday Headers - 2x2 Grid Design -->
+    <div class="weekday-grid">
+      <div class="weekday-cell">
+        <span class="weekday-la">D</span>
+        <span class="weekday-en">Sun</span>
+      </div>
+      <div class="weekday-cell">
+        <span class="weekday-la">L</span>
+        <span class="weekday-en">Mon</span>
+      </div>
+      <div class="weekday-cell">
+        <span class="weekday-la">M</span>
+        <span class="weekday-en">Tue</span>
+      </div>
+      <div class="weekday-cell">
+        <span class="weekday-la">M</span>
+        <span class="weekday-en">Wed</span>
+      </div>
+      <div class="weekday-cell">
+        <span class="weekday-la">I</span>
+        <span class="weekday-en">Thu</span>
+      </div>
+      <div class="weekday-cell">
+        <span class="weekday-la">V</span>
+        <span class="weekday-en">Fri</span>
+      </div>
+      <div class="weekday-cell">
+        <span class="weekday-la">S</span>
+        <span class="weekday-en">Sat</span>
+      </div>
+    </div>
+
+    <!-- Days Grid -->
+    <div id="daysContainer" class="days-grid" role="grid"></div>
+
+    <!-- Feast Notice -->
+    <div id="feastNotice" class="feast-notice hidden" role="status">
+      <span id="feastNoticeText-la" class="header-la"></span>
+      <span class="header-sep"> / </span>
+      <span id="feastNoticeText-en" class="header-en"></span>
+    </div>
+
+    <!-- Error Boundary -->
+    <div id="errorBoundary" class="error-boundary hidden" role="alert">
+      <span id="errorMessage-la" class="header-la">Error</span>
+      <span class="header-sep"> / </span>
+      <span id="errorMessage-en" class="header-en">Error</span>
+      <button id="errorRetry">
+        <span class="header-la">Retry</span>
+        <span class="header-sep"> / </span>
+        <span class="header-en">Retry</span>
+      </button>
+    </div>
+  </main>
+
+  <!-- INFO PANEL -->
+  <aside class="info-panel" id="infoPanel">
+    <!-- Row 1: Gregorian + Liturgical -->
+    <div class="info-row-group">
+      <div class="info-section">
+        <h3>
+          <span class="header-la">Gregorianum</span>
+          <span class="header-sep"> / </span>
+          <span class="header-en">Gregorian</span>
+        </h3>
+        <div class="info-item highlight">
+          <span class="info-label">
+            <span class="header-la">
+              <span class="label-long">Dies</span>
+              <span class="label-short">Dies</span>
+            </span>
+            <span class="header-sep"> / </span>
+            <span class="header-en">
+              <span class="label-long">Date</span>
+              <span class="label-short">Date</span>
+            </span>
+          </span>
+          <span id="infoGregorian">—</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">
+            <span class="header-la">
+              <span class="label-long">Feria</span>
+              <span class="label-short">Feria</span>
+            </span>
+            <span class="header-sep"> / </span>
+            <span class="header-en">
+              <span class="label-long">Weekday</span>
+              <span class="label-short">Day</span>
+            </span>
+          </span>
+          <span id="infoWeekday">—</span>
+        </div>
+      </div>
+      
+      <div class="info-section">
+        <h3>
+          <span class="header-la">Liturgicum</span>
+          <span class="header-sep"> / </span>
+          <span class="header-en">Liturgical</span>
+        </h3>
+        <div class="info-item">
+          <span class="info-label">
+            <span class="header-la">
+              <span class="label-long">Festum</span>
+              <span class="label-short">Festum</span>
+            </span>
+            <span class="header-sep"> / </span>
+            <span class="header-en">
+              <span class="label-long">Feast</span>
+              <span class="label-short">Feast</span>
+            </span>
+          </span>
+          <span id="infoFeast">—</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">
+            <span class="header-la">
+              <span class="label-long">Gradus</span>
+              <span class="label-short">Gradus</span>
+            </span>
+            <span class="header-sep"> / </span>
+            <span class="header-en">
+              <span class="label-long">Rank</span>
+              <span class="label-short">Rank</span>
+            </span>
+          </span>
+          <span id="infoRank">—</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">
+            <span class="header-la">
+              <span class="label-long">Color</span>
+              <span class="label-short">Color</span>
+            </span>
+            <span class="header-sep"> / </span>
+            <span class="header-en">
+              <span class="label-long">Color</span>
+              <span class="label-short">Color</span>
+            </span>
+          </span>
+          <span id="infoColor">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 2: Season + Observances -->
+    <div class="info-row-group">
+      <div class="info-section">
+        <h3>
+          <span class="header-la">Tempus</span>
+          <span class="header-sep"> / </span>
+          <span class="header-en">Season</span>
+        </h3>
+        <div class="info-item">
+          <span class="info-label">
+            <span class="header-la">
+              <span class="label-long">Nomen</span>
+              <span class="label-short">Nomen</span>
+            </span>
+            <span class="header-sep"> / </span>
+            <span class="header-en">
+              <span class="label-long">Name</span>
+              <span class="label-short">Name</span>
+            </span>
+          </span>
+          <span id="infoSeason">—</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">
+            <span class="header-la">
+              <span class="label-long">Hebdomada</span>
+              <span class="label-short">Hebdomada</span>
+            </span>
+            <span class="header-sep"> / </span>
+            <span class="header-en">
+              <span class="label-long">Week</span>
+              <span class="label-short">Week</span>
+            </span>
+          </span>
+          <span id="infoSeasonWeek">—</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">
+            <span class="header-la">
+              <span class="label-long">Annus</span>
+              <span class="label-short">Annus</span>
+            </span>
+            <span class="header-sep"> / </span>
+            <span class="header-en">
+              <span class="label-long">Year</span>
+              <span class="label-short">Year</span>
+            </span>
+          </span>
+          <span id="infoLiturgicalYear">—</span>
+        </div>
+      </div>
+
+      <div class="info-section">
+        <h3>
+          <span class="header-la">Observantiae</span>
+          <span class="header-sep"> / </span>
+          <span class="header-en">Observances</span>
+        </h3>
+        <div class="info-item">
+          <span class="info-label">
+            <span class="header-la">
+              <span class="label-long">Obligatio</span>
+              <span class="label-short">Obligatio</span>
+            </span>
+            <span class="header-sep"> / </span>
+            <span class="header-en">
+              <span class="label-long">Holy day</span>
+              <span class="label-short">Holy</span>
+            </span>
+          </span>
+          <span id="infoHolyDay">—</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">
+            <span class="header-la">
+              <span class="label-long">Ieiunium</span>
+              <span class="label-short">Ieiunium</span>
+            </span>
+            <span class="header-sep"> / </span>
+            <span class="header-en">
+              <span class="label-long">Fast</span>
+              <span class="label-short">Fast</span>
+            </span>
+          </span>
+          <span id="infoFasting">—</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">
+            <span class="header-la">
+              <span class="label-long">Abstinentia</span>
+              <span class="label-short">Abstinentia</span>
+            </span>
+            <span class="header-sep"> / </span>
+            <span class="header-en">
+              <span class="label-long">Abstinence</span>
+              <span class="label-short">Abstinence</span>
+            </span>
+          </span>
+          <span id="infoAbstinence">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 3: Vigils & Octaves -->
+    <div class="info-row-group">
+      <div class="info-section">
+        <h3>
+          <span class="header-la">Vigiliae</span>
+          <span class="header-sep"> / </span>
+          <span class="header-en">Vigils</span>
+        </h3>
+        <div class="vigil-grid" id="vigilGrid">
+          <div class="vigil-item" id="vigilToday"></div>
+          <div class="vigil-item" id="vigilTomorrow"></div>
+        </div>
+      </div>
+
+      <div class="info-section">
+        <h3>
+          <span class="header-la">Octavae</span>
+          <span class="header-sep"> / </span>
+          <span class="header-en">Octaves</span>
+        </h3>
+        <div class="octave-grid" id="octaveGrid"></div>
+      </div>
+    </div>
+
+    <div class="info-note" id="dataSourceNote">
+      <span class="header-la">Missale Romanum · Calendarium Universale</span>
+      <span class="header-sep"> / </span>
+      <span class="header-en">Roman Missal · Universal Calendar</span>
+    </div>
+  </aside>
+
+  <!-- FOOTER LEGEND -->
+  <footer class="calendar-legend">
+    <!-- Colors: 3x2 grid -->
+    <div class="legend-row legend-colors">
+      <div class="legend-item">
+        <span class="color-dot white"></span>
+        <span class="legend-la">Albus</span>
+        <span class="header-sep"> / </span>
+        <span class="legend-en">White</span>
+      </div>
+      <div class="legend-item">
+        <span class="color-dot red"></span>
+        <span class="legend-la">Ruber</span>
+        <span class="header-sep"> / </span>
+        <span class="legend-en">Red</span>
+      </div>
+      <div class="legend-item">
+        <span class="color-dot green"></span>
+        <span class="legend-la">Viridis</span>
+        <span class="header-sep"> / </span>
+        <span class="legend-en">Green</span>
+      </div>
+      <div class="legend-item">
+        <span class="color-dot purple"></span>
+        <span class="legend-la">Purpureus</span>
+        <span class="header-sep"> / </span>
+        <span class="legend-en">Purple</span>
+      </div>
+      <div class="legend-item">
+        <span class="color-dot rose"></span>
+        <span class="legend-la">Roseus</span>
+        <span class="header-sep"> / </span>
+        <span class="legend-en">Rose</span>
+      </div>
+      <div class="legend-item">
+        <span class="color-dot gold"></span>
+        <span class="legend-la">Aureus</span>
+        <span class="header-sep"> / </span>
+        <span class="legend-en">Gold</span>
+      </div>
+    </div>
+
+    <!-- Ranks: 2x2 grid with new icons -->
+    <div class="legend-row legend-ranks">
+      <div class="legend-item">
+        <span class="rank-icon solemnity">✠</span>
+        <span class="legend-la">Solemnitas</span>
+        <span class="header-sep"> / </span>
+        <span class="legend-en">Solemnity</span>
+      </div>
+      <div class="legend-item">
+        <span class="rank-icon feast">†</span>
+        <span class="legend-la">Festum</span>
+        <span class="header-sep"> / </span>
+        <span class="legend-en">Feast</span>
+      </div>
+      <div class="legend-item">
+        <span class="rank-icon memorial">🕊️</span>
+        <span class="legend-la">Memoria</span>
+        <span class="header-sep"> / </span>
+        <span class="legend-en">Memorial</span>
+      </div>
+      <div class="legend-item">
+        <span class="rank-icon optional">☆</span>
+        <span class="legend-la">Memoria ad libitum</span>
+        <span class="header-sep"> / </span>
+        <span class="legend-en">Optional</span>
+      </div>
+    </div>
+
+    <!-- Observances: 2x2 grid -->
+    <div class="legend-row legend-observances">
+      <div class="legend-item">
+        <span class="observance-icon holy">⛪</span>
+        <span class="legend-la">Dies obligationis</span>
+        <span class="header-sep"> / </span>
+        <span class="legend-en">Holy day</span>
+      </div>
+      <div class="legend-item">
+        <span class="observance-icon vigil">🕯️</span>
+        <span class="legend-la">Vigilia</span>
+        <span class="header-sep"> / </span>
+        <span class="legend-en">Vigil</span>
+      </div>
+      <div class="legend-item">
+        <span class="observance-icon octave">⌛</span>
+        <span class="legend-la">Octava</span>
+        <span class="header-sep"> / </span>
+        <span class="legend-en">Octave</span>
+      </div>
+      <div class="legend-item">
+        <span class="observance-icon fast">✝</span>
+        <span class="legend-la">Ieiunium</span>
+        <span class="header-sep"> / </span>
+        <span class="legend-en">Fast</span>
+      </div>
+    </div>
+
+    <!-- Calendar year indicator -->
+    <div class="legend-row legend-year">
+      <div class="year-cycle" id="yearCycleDisplay">
+        <span class="header-la">Annus A · B · C</span>
+        <span class="header-sep"> / </span>
+        <span class="header-en">Year A · B · C</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- TOAST -->
+  <div id="toast" class="toast hidden" role="status"></div>
+
+  <!-- FOUC prevention -->
+  <script>
+    document.body.classList.add('ready');
+  </script>
+
+  <script src="script.js"></script>
+</body>
+</html>
